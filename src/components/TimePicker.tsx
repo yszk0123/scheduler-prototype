@@ -13,6 +13,7 @@ const TimePicker: React.FunctionComponent<{
   const svgRef = useRef<SVGSVGElement | null>(null);
   const r2 = 2 * radius;
   const getDegree = useGetDegree(svgRef);
+  const activeSchedule = schedules.find(schedule => schedule.id === selectedId);
 
   const onPress = useCallback(
     (event: React.MouseEvent<SVGSVGElement>) => {
@@ -38,11 +39,22 @@ const TimePicker: React.FunctionComponent<{
           color={Color.WHITE}
           onPress={() => onSelect(null)}
         />
+        {activeSchedule !== undefined && (
+          <Pie
+            key={activeSchedule.id}
+            active
+            radius={radius}
+            color={activeSchedule.color}
+            offset={activeSchedule.offset}
+            value={activeSchedule.value}
+            onPress={() => onSelect(activeSchedule.id)}
+          />
+        )}
         {schedules.map(({ id, color, offset, value }) => {
           return (
             <Pie
               key={id}
-              active={id === selectedId}
+              active={false}
               radius={radius}
               color={color}
               offset={offset}
