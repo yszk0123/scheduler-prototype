@@ -7,7 +7,7 @@ const TimePicker: React.FunctionComponent<{
   selectedId: number | null;
   radius: number;
   schedules: Schedule[];
-  onChangeValue: (value: number) => void;
+  onChangeValue: (id: number, value: number) => void;
   onSelect: (id: number | null) => void;
 }> = ({ selectedId, radius, schedules, onChangeValue, onSelect }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -15,12 +15,15 @@ const TimePicker: React.FunctionComponent<{
   const getDegree = useGetDegree(svgRef);
   const activeSchedule = schedules.find(schedule => schedule.id === selectedId);
 
-  const onPress = useCallback(
-    (event: React.MouseEvent<SVGSVGElement>) => {
+  const onMove = useCallback(
+    (event: React.MouseEvent<SVGElement>) => {
+      if (selectedId === null) {
+        return;
+      }
       const newValue = (getDegree(event) || 0) / 360;
-      onChangeValue(newValue);
+      onChangeValue(selectedId, newValue);
     },
-    [getDegree, onChangeValue],
+    [getDegree, selectedId, onChangeValue],
   );
 
   return (
@@ -29,7 +32,7 @@ const TimePicker: React.FunctionComponent<{
       style={{ borderRadius: '50%' }}
       width={r2}
       height={r2}
-      onClick={onPress}
+      onMouseMove={onMove}
     >
       <g transform={`translate(${radius}, ${radius})`}>
         <Pie

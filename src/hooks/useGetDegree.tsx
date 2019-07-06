@@ -13,7 +13,7 @@ export function useGetDegree(svgRef: React.RefObject<SVGSVGElement>) {
     setPoint(newPoint);
   }, [svgRef]);
   const getDegree = useCallback(
-    (event: React.MouseEvent<SVGSVGElement>) => {
+    (event: React.MouseEvent<SVGElement>) => {
       if (point === null || svgRef.current === null) {
         return;
       }
