@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { schedules } from './AppConstant';
+import { schedules } from '../AppConstant';
 import { Box } from './Box';
 import { ScheduleList } from './ScheduleList';
 import { TimePicker } from './TimePicker';

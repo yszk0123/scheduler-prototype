@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from './AppConstant';
-import { Schedule } from './AppType';
+import { colors } from '../AppConstant';
+import { Schedule } from '../AppType';
 
 const ScheduleList: React.FunctionComponent<{
   schedules: Schedule[];

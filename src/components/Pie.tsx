@@ -1,6 +1,6 @@
 import React from 'react';
-import { colors } from './AppConstant';
-import { Color } from './AppType';
+import { colors } from '../AppConstant';
+import { Color } from '../AppType';
 
 const Pie = ({
   back = false,

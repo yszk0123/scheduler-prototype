@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
-import { Color, Schedule } from './AppType';
+import { Color, Schedule } from '../AppType';
+import { useGetDegree } from '../hooks/useGetDegree';
 import { Pie } from './Pie';
-import { useGetDegree } from './useGetDegree';
 
 const TimePicker: React.FunctionComponent<{
   selectedId: number | null;
