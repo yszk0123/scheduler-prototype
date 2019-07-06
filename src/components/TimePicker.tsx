@@ -53,11 +53,12 @@ const TimePicker: React.FunctionComponent<{
             onPress={() => onSelect(activeSchedule.id)}
           />
         )}
-        {schedules.map(({ id, color, offset, value }) => {
+        {schedules.map(({ id, cross, color, offset, value }) => {
           return (
             <Pie
               key={id}
               active={false}
+              cross={cross}
               radius={radius}
               color={color}
               offset={offset}
@@ -71,4 +72,5 @@ const TimePicker: React.FunctionComponent<{
   );
 };
 
-export { TimePicker };
+const MemoizedTimePicker = React.memo(TimePicker);
+export { MemoizedTimePicker as TimePicker };

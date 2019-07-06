@@ -21,4 +21,5 @@ export type Schedule = {
   value: number;
   text: string;
   highlight: boolean;
+  cross: boolean;
 };

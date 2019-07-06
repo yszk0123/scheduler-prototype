@@ -5,6 +5,7 @@ import { Color } from '../AppType';
 const Pie = ({
   back = false,
   active,
+  cross = false,
   offset = 0,
   value = 1,
   radius,
@@ -14,6 +15,7 @@ const Pie = ({
 }: {
   back?: boolean;
   active: boolean;
+  cross?: boolean;
   offset?: number;
   value?: number;
   radius: number;
@@ -21,7 +23,11 @@ const Pie = ({
   onPress?: () => void;
   onMove?: (event: React.MouseEvent<SVGElement>) => void;
 }) => {
-  const width = (back ? 0.75 : active ? 1 : 0.5) * radius;
+  let width = (back ? 0.75 : active ? 1 : 0.5) * radius;
+  if (cross) {
+    width *= 0.5;
+  }
+
   return (
     <RawPie
       offset={offset}

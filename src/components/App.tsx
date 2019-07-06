@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { noop } from '../AppHelper';
 import { Color, Schedule } from '../AppType';
@@ -15,6 +15,7 @@ function createSchedules(): Schedule[] {
       color: Color.GREEN,
       text: 'breakfast',
       highlight: false,
+      cross: false,
     },
     {
       id: 1,
@@ -23,6 +24,7 @@ function createSchedules(): Schedule[] {
       color: Color.ORANGE,
       text: 'lunch',
       highlight: false,
+      cross: false,
     },
     {
       id: 2,
@@ -31,6 +33,7 @@ function createSchedules(): Schedule[] {
       color: Color.GREEN,
       text: 'running',
       highlight: true,
+      cross: false,
     },
     {
       id: 3,
@@ -39,6 +42,7 @@ function createSchedules(): Schedule[] {
       color: Color.ORANGE,
       text: 'dinner',
       highlight: false,
+      cross: false,
     },
   ];
 }
@@ -52,13 +56,34 @@ function updateOffset(schedule: Schedule, newOffset: number): Schedule {
   return { ...schedule, offset: fixedOffset };
 }
 
+function getCross(a: Schedule, b: Schedule): boolean {
+  return b.offset < a.offset + a.value;
+}
+function calculateSchedules(schedules: Schedule[]): Schedule[] {
+  const sorted = [...schedules].sort((a, b) => a.offset - b.offset);
+  return sorted.map((schedule, i) => {
+    const cross = i === 0 ? false : getCross(sorted[i - 1], schedule);
+    return {
+      ...schedule,
+      cross,
+    };
+  });
+}
+
 const Example: React.FunctionComponent<{}> = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [otherSchedules] = useState(() => createSchedules());
   const [schedules, setSchedules] = useState(() => createSchedules());
+  const sortedSchedules = useMemo(() => calculateSchedules(schedules), [
+    schedules,
+  ]);
 
   const onSelect = useCallback(
     (newSelectedId: number | null) => {
-      const id = newSelectedId === selectedId ? null : newSelectedId;
+      const id =
+        selectedId !== null || newSelectedId === selectedId
+          ? null
+          : newSelectedId;
       setSelectedId(id);
     },
     [selectedId],
@@ -79,35 +104,35 @@ const Example: React.FunctionComponent<{}> = () => {
       <View style={styles.container}>
         <View style={styles.bar}>
           <TimePicker
-            selectedId={selectedId}
+            selectedId={null}
             radius={16}
-            schedules={schedules}
+            schedules={otherSchedules}
             onChangeValue={noop}
-            onSelect={onSelect}
+            onSelect={noop}
           />
           <TimePicker
-            selectedId={selectedId}
+            selectedId={null}
             radius={16}
-            schedules={schedules}
+            schedules={otherSchedules}
             onChangeValue={noop}
-            onSelect={onSelect}
+            onSelect={noop}
           />
           <TimePicker
-            selectedId={selectedId}
+            selectedId={null}
             radius={16}
-            schedules={schedules}
+            schedules={otherSchedules}
             onChangeValue={noop}
-            onSelect={onSelect}
+            onSelect={noop}
           />
         </View>
         <TimePicker
           selectedId={selectedId}
           radius={60}
-          schedules={schedules}
+          schedules={sortedSchedules}
           onChangeValue={onChangeValue}
           onSelect={onSelect}
         />
-        <ScheduleList selectedId={selectedId} schedules={schedules} />
+        <ScheduleList selectedId={selectedId} schedules={sortedSchedules} />
       </View>
     </Box>
   );
