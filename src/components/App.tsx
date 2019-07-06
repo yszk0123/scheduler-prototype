@@ -51,11 +51,6 @@ const App: React.FunctionComponent<{}> = () => {
   return <Example />;
 };
 
-function updateOffset(schedule: Schedule, newOffset: number): Schedule {
-  const fixedOffset = Math.min(newOffset, 0.999999 - schedule.value);
-  return { ...schedule, offset: fixedOffset };
-}
-
 function getCross(a: Schedule, b: Schedule): boolean {
   return b.offset < a.offset + a.value;
 }
@@ -89,10 +84,10 @@ const Example: React.FunctionComponent<{}> = () => {
     [selectedId],
   );
 
-  const onChangeValue = useCallback(
-    (id: number, newValue: number) => {
+  const onChangeOffset = useCallback(
+    (id: number, newOffset: number) => {
       const newSchedules = schedules.map(schedule =>
-        schedule.id === id ? updateOffset(schedule, newValue) : schedule,
+        schedule.id === id ? { ...schedule, offset: newOffset } : schedule,
       );
       setSchedules(newSchedules);
     },
@@ -107,21 +102,21 @@ const Example: React.FunctionComponent<{}> = () => {
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeValue={noop}
+            onChangeOffset={noop}
             onSelect={noop}
           />
           <TimePicker
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeValue={noop}
+            onChangeOffset={noop}
             onSelect={noop}
           />
           <TimePicker
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeValue={noop}
+            onChangeOffset={noop}
             onSelect={noop}
           />
         </View>
@@ -129,7 +124,7 @@ const Example: React.FunctionComponent<{}> = () => {
           selectedId={selectedId}
           radius={60}
           schedules={sortedSchedules}
-          onChangeValue={onChangeValue}
+          onChangeOffset={onChangeOffset}
           onSelect={onSelect}
         />
         <ScheduleList selectedId={selectedId} schedules={sortedSchedules} />

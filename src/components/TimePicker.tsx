@@ -1,4 +1,11 @@
-import React, { useCallback, useRef } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Color, Schedule } from '../AppType';
 import { useGetDegree } from '../hooks/useGetDegree';
 import { Pie } from './Pie';
@@ -7,24 +14,59 @@ const TimePicker: React.FunctionComponent<{
   selectedId: number | null;
   radius: number;
   schedules: Schedule[];
-  onChangeValue: (id: number, value: number) => void;
+  onChangeOffset: (id: number, value: number) => void;
   onSelect: (id: number | null) => void;
-}> = ({ selectedId, radius, schedules, onChangeValue, onSelect }) => {
+}> = ({ selectedId, radius, schedules, onChangeOffset, onSelect }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const r2 = 2 * radius;
   const getDegree = useGetDegree(svgRef);
-  const activeSchedule = schedules.find(schedule => schedule.id === selectedId);
+  const activeSchedule = useMemo(
+    () => schedules.find(schedule => schedule.id === selectedId) || null,
+    [selectedId, schedules],
+  );
+  const [activeOffset, setActiveOffset] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const onMouseDown = useCallback(() => {
+    if (selectedId !== null) {
+      setDragging(true);
+    }
+  }, [selectedId]);
+
+  const onMouseUp = useCallback(() => {
+    if (dragging && selectedId !== null && activeOffset !== null) {
+      onChangeOffset(selectedId, activeOffset);
+      setDragging(false);
+    }
+  }, [dragging, activeOffset, selectedId, onChangeOffset]);
 
   const onMove = useCallback(
-    (event: React.MouseEvent<SVGElement>) => {
-      if (selectedId === null) {
+    (event: MouseEvent) => {
+      if (activeSchedule === null) {
         return;
       }
-      const newValue = (getDegree(event) || 0) / 360;
-      onChangeValue(selectedId, newValue);
+
+      const newOffset = (getDegree(event) || 0) / 360;
+      setActiveOffset(updateOffset(activeSchedule, newOffset));
     },
-    [getDegree, selectedId, onChangeValue],
+    [getDegree, activeSchedule],
   );
+
+  useEffect(() => {
+    const schedule = schedules.find(s => s.id === selectedId);
+    setActiveOffset(schedule ? schedule.offset : null);
+  }, [selectedId, schedules]);
+
+  useEffect(() => {
+    if (!dragging) {
+      return;
+    }
+
+    document.body.addEventListener('mousemove', onMove);
+    return () => {
+      document.body.removeEventListener('mousemove', onMove);
+    };
+  }, [dragging, onMove]);
 
   return (
     <svg
@@ -32,7 +74,8 @@ const TimePicker: React.FunctionComponent<{
       style={{ borderRadius: '50%' }}
       width={r2}
       height={r2}
-      onMouseMove={onMove}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
       <g transform={`translate(${radius}, ${radius})`}>
         <Pie
@@ -42,35 +85,43 @@ const TimePicker: React.FunctionComponent<{
           color={Color.WHITE}
           onPress={() => onSelect(null)}
         />
-        {activeSchedule !== undefined && (
-          <Pie
-            key={activeSchedule.id}
-            active
-            radius={radius}
-            color={activeSchedule.color}
-            offset={activeSchedule.offset}
-            value={activeSchedule.value}
-            onPress={() => onSelect(activeSchedule.id)}
-          />
-        )}
         {schedules.map(({ id, cross, color, offset, value }) => {
+          const active = selectedId === id;
+          const finalOffset = active ? activeOffset || offset : offset;
+
           return (
-            <Pie
-              key={id}
-              active={false}
-              cross={cross}
-              radius={radius}
-              color={color}
-              offset={offset}
-              value={value}
-              onPress={() => onSelect(id)}
-            />
+            <Fragment key={id}>
+              {active && (
+                <Pie
+                  active
+                  cross={cross}
+                  radius={radius}
+                  color={color}
+                  offset={finalOffset}
+                  value={value}
+                  onPress={() => onSelect(id)}
+                />
+              )}
+              <Pie
+                active={false}
+                cross={cross}
+                radius={radius}
+                color={color}
+                offset={finalOffset}
+                value={value}
+                onPress={() => onSelect(id)}
+              />
+            </Fragment>
           );
         })}
       </g>
     </svg>
   );
 };
+
+function updateOffset(schedule: Schedule, newOffset: number): number {
+  return Math.min(newOffset, 0.999999 - schedule.value);
+}
 
 const MemoizedTimePicker = React.memo(TimePicker);
 export { MemoizedTimePicker as TimePicker };
