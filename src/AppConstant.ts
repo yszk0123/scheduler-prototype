@@ -10,6 +10,10 @@ export const colors: Record<Color, ColorTheme> = {
     active: 'white',
     inactive: 'white',
   },
+  [Color.BLACK]: {
+    active: 'rgba(0, 0, 0, 0.3)',
+    inactive: 'rgba(0, 0, 0, 0.3)',
+  },
   [Color.GREEN]: {
     active: '#4c8c4a',
     inactive: '#1b5e20',

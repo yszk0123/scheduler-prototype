@@ -10,6 +10,7 @@ export type ScheduleModel = {
 
 export enum Color {
   WHITE = 'WHITE',
+  BLACK = 'BLACK',
   GREEN = 'GREEN',
   ORANGE = 'ORANGE',
 }

@@ -84,10 +84,10 @@ const Example: React.FunctionComponent<{}> = () => {
     [selectedId],
   );
 
-  const onChangeOffset = useCallback(
-    (id: number, newOffset: number) => {
+  const onChange = useCallback(
+    (id: number, next: { offset: number; value: number }) => {
       const newSchedules = schedules.map(schedule =>
-        schedule.id === id ? { ...schedule, offset: newOffset } : schedule,
+        schedule.id === id ? { ...schedule, ...next } : schedule,
       );
       setSchedules(newSchedules);
     },
@@ -102,21 +102,21 @@ const Example: React.FunctionComponent<{}> = () => {
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeOffset={noop}
+            onChange={noop}
             onSelect={noop}
           />
           <TimePicker
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeOffset={noop}
+            onChange={noop}
             onSelect={noop}
           />
           <TimePicker
             selectedId={null}
             radius={16}
             schedules={otherSchedules}
-            onChangeOffset={noop}
+            onChange={noop}
             onSelect={noop}
           />
         </View>
@@ -124,7 +124,7 @@ const Example: React.FunctionComponent<{}> = () => {
           selectedId={selectedId}
           radius={60}
           schedules={sortedSchedules}
-          onChangeOffset={onChangeOffset}
+          onChange={onChange}
           onSelect={onSelect}
         />
         <ScheduleList selectedId={selectedId} schedules={sortedSchedules} />

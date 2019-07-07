@@ -11,7 +11,9 @@ const Pie = ({
   radius,
   color = Color.WHITE,
   onPress,
+  onDown,
   onMove,
+  onUp,
 }: {
   back?: boolean;
   active: boolean;
@@ -21,7 +23,9 @@ const Pie = ({
   radius: number;
   color: Color;
   onPress?: () => void;
+  onDown?: (event: React.MouseEvent<SVGElement>) => void;
   onMove?: (event: React.MouseEvent<SVGElement>) => void;
+  onUp?: (event: React.MouseEvent<SVGElement>) => void;
 }) => {
   let width = (back ? 0.75 : active ? 1 : 0.5) * radius;
   if (cross) {
@@ -36,7 +40,9 @@ const Pie = ({
       width={width}
       color={active ? colors[color].active : colors[color].inactive}
       onPress={onPress}
+      onDown={onDown}
       onMove={onMove}
+      onUp={onUp}
     />
   );
 };
@@ -48,7 +54,9 @@ const RawPie = ({
   width = radius,
   color,
   onPress,
+  onDown,
   onMove,
+  onUp,
 }: {
   offset?: number;
   value?: number;
@@ -56,7 +64,9 @@ const RawPie = ({
   radius: number;
   color: string;
   onPress?: () => void;
+  onDown?: (event: React.MouseEvent<SVGElement>) => void;
   onMove?: (event: React.MouseEvent<SVGElement>) => void;
+  onUp?: (event: React.MouseEvent<SVGElement>) => void;
 }) => {
   const r2 = radius / 2;
   const length = 2 * Math.PI * r2;
@@ -73,7 +83,9 @@ const RawPie = ({
       strokeWidth={width}
       strokeDasharray={dasharray}
       onClick={onPress}
+      onMouseDown={onDown}
       onMouseMove={onMove}
+      onMouseUp={onUp}
     />
   );
 };
